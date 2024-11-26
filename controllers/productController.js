@@ -144,31 +144,31 @@ exports.getProductById = async (req, res) => {
  */
 exports.getProductByCategory = async (req, res) => {
     try {
-        const category = req.params.category
-        await Product.find({ category })
-            .sort({ name: 1 })
-            .exec()
-            .then((products) => {
-                if (!products) {
-                    res.status(404).json({
-                        statusCode: 404,
-                        message: `Product with category ${category} not found`,
-                        data: []
-                    })
-                }
-                else{
-                    res.status(200).json({
-                        statusCode: 200,
-                        message: `Success get product with category ${category}`,
-                        data: products
-                    })
-                }
-            })
+        const category = req.params.category;
+        // find products by category and sort by name
+        const products = await Product.find({ category }).sort({ name: 1 }).exec();
+
+        // Check if there are no products
+        if (products.length === 0) {
+            return res.status(404).json({
+                statusCode: 404,
+                message: `No products found for category ${category}`,
+                data: []
+            });
+        }
+
+        // if products found
+        res.status(200).json({
+            statusCode: 200,
+            message: `Success get product with category ${category}`,
+            data: products
+        });
     } catch (error) {
+        // Handle error
         res.status(500).json({
             statusCode: 500,
             message: `Failed to get product with category ${category}`,
             error: error.message
-            });
+        });
     }
-}
+};
